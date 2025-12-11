@@ -11,7 +11,7 @@ h2 {
 
 .controls {
   width: 28%;
-  height: 100vh;
+  height: 100%;
   justify-self: start;
   align-self: center;
   padding: 8px;
@@ -20,7 +20,7 @@ h2 {
 .log-area {
   margin-top: 30px;
   background-color: lightgray;
-  height: 40vh;
+  height: 40%;
   text-align: center;
   padding: 4px;
   display: flex;
@@ -37,14 +37,14 @@ h2 {
 }
 
 .score {
-  height: 10vh;
+  height: 10%;
 }
 
 .pawns {
   border: 1.5px solid lightgray;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  height: 35vh;
+  height: 35%;
 }
 
 .pawn-place {
@@ -58,7 +58,7 @@ h2 {
 
 .board-area {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: lightgray;
   display: flex;
   justify-self: end;
@@ -69,7 +69,7 @@ h2 {
 
 .ladders-area {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-self: end;
   align-self: center;
@@ -80,8 +80,9 @@ h2 {
 }
 
 .pawns-area {
+  border: 2px solid red;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-self: end;
   align-self: center;

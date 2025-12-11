@@ -34,8 +34,8 @@ export default function Board() {
       <div className="board">
         {cells.map((ele, idx) => {
           return (
-            <div id={ele + 1} key={idx} className="cell">
-              <span className="number">{ele + 1}</span>
+            <div key={idx} className="cell">
+              <div style={{width: "fit-content", border: "2px solid green"}} id={ele + 1} className="number">{ele + 1}</div>
             </div>
           );
         })}
