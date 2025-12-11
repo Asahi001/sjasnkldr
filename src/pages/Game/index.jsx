@@ -14,14 +14,17 @@ import Snake3 from "../../componets/snakes/Snake3";
 import Snake4 from "../../componets/snakes/Snake4";
 import Snake5 from "../../componets/snakes/Snake5";
 import Snake6 from "../../componets/snakes/Snake6";
+import { useNavigate } from "react-router-dom";
 
 function Game() {
   // const [playerPos, setPlayerPos] = useState(100);
   const [showDice, setShowDice] = useState(true);
   const [currentTurn, setCurrentTurn] = useState(0);
+  const [loading, setLoading] = useState(true);
   // const [randomChoice, setRandomChoice] = useState();
   const [xPos, setXPos] = useState();
   const [yPos, setYPos] = useState();
+  const navigate = useNavigate();
 
   const {
     players,
@@ -54,22 +57,31 @@ function Game() {
     } else {
       newVal = temp[currentTurn].currentPosition - random;
     }
-    const pos = getPositionXY(document.getElementById(newVal));
+    const pos = newVal >= 1 && getPositionXY(document.getElementById(newVal));
     temp[currentTurn] = {
       ...temp[currentTurn],
-      currentPosition: newVal >= 0 && newVal,
+      currentPosition: newVal >= 1 ? newVal : temp[currentTurn].currentPosition,
       posX: pos.X,
-      posY: pos.Y-20,
+      posY: pos.Y - 20,
     };
     setPlayers(temp);
+
     setTimeout(() => {
-      if (optMove.length == 0 && !optMove[0]) {
-        checkLaddednSnake(newVal);
-      }
-      setCurrentTurn(currentTurn + 1 !== players.length ? currentTurn + 1 : 0);
-      setShowDice(true);
-      if (newVal == 0) {
-        alert("Game Over");
+      if (newVal == 1) {
+        alert(
+          "Game Over! " +
+            temp[currentTurn].name +
+            " is the winner of the match \n Thank you for playing the game"
+        );
+        navigate("/");
+      } else {
+        if (optMove.length == 0 && !optMove[0]) {
+          checkLaddednSnake(newVal);
+        }
+        setCurrentTurn(
+          currentTurn + 1 !== players.length ? currentTurn + 1 : 0
+        );
+        setShowDice(true);
       }
     }, 1000);
 
@@ -89,10 +101,21 @@ function Game() {
 
   useEffect(() => {
     getPositionXY(document.getElementById(playerPos));
+
     setTimeout(() => {
-      const pos = getPositionXY(document.getElementById(playerPos));
-      setXPos(pos.X);
-      setYPos(pos.Y);
+      // const pos = getPositionXY(document.getElementById(playerPos));
+      // setXPos(pos.X);
+      // setYPos(pos.Y);
+
+      setPlayers(
+        players.map((ele) => {
+          return {
+            ...ele,
+            posX: getPositionXY(document.getElementById(100)).X,
+            posY: getPositionXY(document.getElementById(100)).Y - 20,
+          };
+        })
+      );
     }, 1000);
   }, []);
 
@@ -181,123 +204,116 @@ function Game() {
     }
   }
 
+  setTimeout(() => {
+    setLoading(false);
+  }, 3000);
+
   return (
-    <div
-      id="ext"
-      style={{
-        display: "flex",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div style={{ width: "1272px", height: "588px", border: "2px solid" }}>
-        <div style={{ display: "flex", height: "100%" }}>
-          <div className="controls">
-            <h2>Snake 🐍 And Ladder 🪜</h2>
-            <div className="log-area">
-              <h3 className="player-term">{players[currentTurn].name} Turn</h3>
-              <div className="log-records">
-                <div
-                  className="dice-area"
-                  onClick={() => showDice && getRandom()}
-                >
-                  <Dice />
-                  {!showDice && <div className="black-screen"></div>}
+    <>
+      {loading ? (
+        <div className="loader">
+          <div className="wheel">🛞</div>
+          <h1>Setting Up Game...</h1>
+        </div>
+      ) : null}
+      <div
+        id="ext"
+        style={{
+          display: "flex",
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ width: "1272px", height: "588px", border: "2px solid" }}>
+          <div style={{ display: "flex", height: "100%" }}>
+            <div className="controls">
+              <h2>Snake 🐍 And Ladder 🪜</h2>
+              <div className="log-area">
+                <h3 className="player-term">
+                  {players[currentTurn].name} Turn
+                </h3>
+                <div className="log-records">
+                  <div
+                    className="dice-area"
+                    onClick={() => showDice && getRandom()}
+                  >
+                    <Dice />
+                    {!showDice && <div className="black-screen"></div>}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="score"></div>
-            <div className="pawns">
-              <div className="pawn-place">
-                <span>Player-1</span>
-                <img width={"50%"} height={"60%"} src="/p1.png" />
-              </div>
-              <div className="pawn-place">
+              <div className="score"></div>
+              <div className="pawns">
+                {players.map((player, idx) => {
+                  return (
+                    <div key={idx} className="pawn-place">
+                      <span>{player.name}</span>
+                      <img
+                        width={"50%"}
+                        height={"60%"}
+                        src={`/p${idx + 1}.png`}
+                      />
+                    </div>
+                  );
+                })}
+                {/* <div className="pawn-place">
                 {" "}
                 <span>Player-2</span>
                 <img width={"50%"} height={"60%"} src="/p2.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-3</span>
-                <img width={"50%"} height={"60%"} src="/p3.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-4</span>
-                <img width={"50%"} height={"60%"} src="/p4.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-5</span>
-                <img width={"50%"} height={"60%"} src="/p5.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-6</span>
-                <img width={"50%"} height={"60%"} src="/p6.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-7</span>
-                <img width={"50%"} height={"60%"} src="/p7.png" />
-              </div>
-              <div className="pawn-place">
-                {" "}
-                <span>Player-8</span>
-                <img width={"50%"} height={"60%"} src="/p8.png" />
+              </div> */}
               </div>
             </div>
-          </div>
 
-          <div style={{ width: "80%", position: "relative" }}>
-            <div id="board" className="board-area">
-              <Board />
+            <div style={{ width: "80%", position: "relative" }}>
+              <div id="board" className="board-area">
+                <Board />
+              </div>
+              <div className="ladders-area">
+                <Ladders props={{ top: "20%", left: "39%" }} />
+                <Ladders props={{ top: "56%", left: "76%" }} />
+                <LadderLarge props={{ top: "20%", left: "18%" }} />
+                <LadderLarge props={{ top: "4%", left: "55%" }} />
+                <Crossladder props={{ top: "60%", left: "50%" }} />
+                <Crossladder props={{ top: "6%", left: "5%" }} />
+                <Snake1 props={{ top: "6%", left: "15%" }} />
+                <Snake1 props={{ top: "20%", left: "80%" }} />
+                <Snake2 props={{ top: "34%", left: "17%" }} />
+                <Snake3 props={{ top: "25%", left: "52%" }} />
+                <Snake4 props={{ top: "60%", left: "60%" }} />
+                <Snake4 props={{ top: "60%", left: "34%" }} />
+                <Snake5 props={{ top: "40%", left: "80%" }} />
+                <Snake5 props={{ top: "6%", left: "30%" }} />
+                <Snake6 props={{ top: "62%", left: "20%" }} />
+                <Snake6 props={{ top: "30%", left: "2%" }} />
+              </div>
             </div>
-            <div className="ladders-area">
-              <Ladders props={{ top: "20%", left: "39%" }} />
-              <Ladders props={{ top: "56%", left: "76%" }} />
-              <LadderLarge props={{ top: "20%", left: "18%" }} />
-              <LadderLarge props={{ top: "4%", left: "55%" }} />
-              <Crossladder props={{ top: "60%", left: "50%" }} />
-              <Crossladder props={{ top: "6%", left: "5%" }} />
-              <Snake1 props={{ top: "6%", left: "15%" }} />
-              <Snake1 props={{ top: "20%", left: "80%" }} />
-              <Snake2 props={{ top: "34%", left: "17%" }} />
-              <Snake3 props={{ top: "25%", left: "52%" }} />
-              <Snake4 props={{ top: "60%", left: "60%" }} />
-              <Snake4 props={{ top: "60%", left: "34%" }} />
-              <Snake5 props={{ top: "40%", left: "80%" }} />
-              <Snake5 props={{ top: "6%", left: "30%" }} />
-              <Snake6 props={{ top: "62%", left: "20%" }} />
-              <Snake6 props={{ top: "30%", left: "2%" }} />
-            </div>
-          </div>
 
-          <div id="pawnsArea" className="pawns-area">
-            {/* <img
+            <div id="pawnsArea" className="pawns-area">
+              {/* <img
             src="/p1.png"
             className="player-pawn"
             style={{ left: `${xPos - 300}px`, top: `${yPos - 20}px` }}
           /> */}
-            {players.map((ele, idx) => {
-              return (
-                <img
-                  src={`/p${idx + 1}.png`}
-                  className="player-pawn"
-                  // target="100"
-                  style={{
-                    left: `${ele.posX}px`,
-                    top: `${ele.posY}px`,
-                  }}
-                />
-              );
-            })}
+              {players.map((ele, idx) => {
+                return (
+                  <img
+                    key={idx}
+                    src={`/p${idx + 1}.png`}
+                    className="player-pawn"
+                    // target="100"
+                    style={{
+                      left: `${ele.posX}px`,
+                      top: `${ele.posY}px`,
+                    }}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

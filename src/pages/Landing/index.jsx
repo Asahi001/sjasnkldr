@@ -12,7 +12,8 @@ export default function Landing() {
     renderNames();
   }, [playerCount]);
 
-  function generateroom() {
+  function generateroom(event) {
+    event.preventDefault();
     let id = v4();
     setRoomId(id);
     navigate("/game");
@@ -28,7 +29,7 @@ export default function Landing() {
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <form className="form">
+      <form className="form" onSubmit={(event) => generateroom(event)}>
         <h1>Game Start</h1>
         <div className="form-field">
           <label className="input-label">
@@ -39,6 +40,7 @@ export default function Landing() {
             type="number"
             min={2}
             max={8}
+            required
             placeholder="Minimum is 2 players and Maximum is 8 Players"
             onChange={(e) => {
               setPlayerCount(e.target.value);
@@ -47,11 +49,12 @@ export default function Landing() {
           <span style={{ borderBottom: "2px solid lightgray" }} />
           {players?.map((ele, idx) => {
             return (
-              <>
+              <div key={idx}>
                 <input
                   className="input-box"
                   type="text"
                   name={"player" + (idx + 1)}
+                  required
                   min={2}
                   max={8}
                   placeholder={`Enter Player ${idx + 1} name: `}
@@ -62,26 +65,20 @@ export default function Landing() {
                       ["player" + (idx + 1)]: e.target.value,
                       name: e.target.value,
                       id: idx + 1,
-                      posX: 362,
-                      posY: 509.53125,
+                      posX: 0,
+                      posY: 0,
                       currentPosition: 100,
                     };
                     setPlayers(temp);
                     // console.log(players, "players");
                   }}
                 />
-              </>
+              </div>
             );
           })}
         </div>
 
-        <button
-          className="gen-btn"
-          type="button"
-          onClick={() => {
-            generateroom();
-          }}
-        >
+        <button className="gen-btn" type="submit">
           Generate Room ID
         </button>
       </form>
